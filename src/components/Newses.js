@@ -7,32 +7,40 @@ const Newses = ({ country, pageSize, category }) => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [error, setError] = useState(null); // New state for error handling
 
   const fetchNews = async (page) => {
     setLoading(true);
-    let url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=100cf3514d2c4dcca19877c952cac93c&page=${page}&pageSize=${pageSize}`;
-    let data = await fetch(url);
-    let parsedData = await data.json();
-    setArticles(parsedData.articles);
-    setTotalResults(parsedData.totalResults);
-    setLoading(false);
+    setError(null); // Clear previous errors
+    try {
+      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=100cf3514d2c4dcca19877c952cac93c&page=${page}&pageSize=${pageSize}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const parsedData = await response.json();
+      setArticles(parsedData.articles);
+      setTotalResults(parsedData.totalResults);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setError('Failed to fetch news. Please try again later.');
+      setArticles([]); // Clear articles on error
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchNews(page);
   }, [page, country, category]);
 
-  const handlePrevClick = async () => {
+  const handlePrevClick = () => {
     if (page > 1) {
       setPage(page - 1);
-      fetchNews(page - 1);
     }
   };
 
-  const handleNextClick = async () => {
+  const handleNextClick = () => {
     if (page + 1 <= Math.ceil(totalResults / pageSize)) {
       setPage(page + 1);
-      fetchNews(page + 1);
     }
   };
 
@@ -40,17 +48,22 @@ const Newses = ({ country, pageSize, category }) => {
     <div className="container">
       <h1 className="my-3">DailyNews - Top Headlines</h1>
       {loading && <div>Loading...</div>}
+      {error && <div className="alert alert-danger">{error}</div>} {/* Display error if present */}
       <div className="row my-3">
-        {articles.map((element) => (
-          <div className="col-md-4 mt-2" key={element.url}>
-            <NewsItems
-              newsUrl={element.url}
-              title={element.title ? element.title.slice(0, 50) : "Click to read complete news"}
-              description={element.description ? element.description.slice(0, 100) : "To read description open in a new page"}
-              imageUrl={element.urlToImage}
-            />
-          </div>
-        ))}
+        {articles.length > 0 ? (
+          articles.map((element) => (
+            <div className="col-md-4 mt-2" key={element.url}>
+              <NewsItems
+                newsUrl={element.url}
+                title={element.title ? element.title.slice(0, 50) : "Click to read complete news"}
+                description={element.description ? element.description.slice(0, 100) : "To read description open in a new page"}
+                imageUrl={element.urlToImage}
+              />
+            </div>
+          ))
+        ) : (
+          !loading && <div>No news available</div> // Show message if no articles and not loading
+        )}
       </div>
       <div className="container d-flex justify-content-between">
         <button disabled={page <= 1} onClick={handlePrevClick} className="btn btn-dark">
