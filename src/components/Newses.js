@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import NewsItems from './NewsItems';
 
@@ -9,14 +9,13 @@ const Newses = ({ country, pageSize, category }) => {
   const [totalResults, setTotalResults] = useState(0);
   const [error, setError] = useState(null); // New state for error handling
 
-  const fetchNews = async (page) => {
+  const fetchNews = useCallback(async (page) => {
     setLoading(true);
     setError(null); // Clear previous errors
     try {
-      // const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=100cf3514d2c4dcca19877c952cac93c&page=${page}&pageSize=${pageSize}`;
-      const url = fetch (`https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=100cf3514d2c4dcca19877c952cac93c&page=${page}&pageSize=${pageSize}`);
-
-      const response = await (url);
+      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=100cf3514d2c4dcca19877c952cac93c&page=${page}&pageSize=${pageSize}`;
+      
+      const response = await fetch(url);
       if (!response.ok) throw new Error('Network response was not ok');
       const parsedData = await response.json();
       setArticles(parsedData.articles);
@@ -28,11 +27,11 @@ const Newses = ({ country, pageSize, category }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [country, category, pageSize]); // Memoize the function with necessary dependencies
 
   useEffect(() => {
     fetchNews(page);
-  }, [page, country, category]);
+  }, [fetchNews, page]); // Added fetchNews to dependencies to avoid ESLint warnings
 
   const handlePrevClick = () => {
     if (page > 1) {
