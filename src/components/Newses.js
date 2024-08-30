@@ -13,8 +13,7 @@ const Newses = ({ country, pageSize, category }) => {
     setLoading(true);
     setError(null); // Clear previous errors
     try {
-      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=002ef00f98974c7e8f49ffb6522fcc47&page=${page}&pageSize=${pageSize}`;
-      
+      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=002ef00f98974c7e8f49ffb6522fcc47&page=${page}&pageSize=${pageSize}`;      
       const response = await fetch(url);
       if (!response.ok) throw new Error('Network response was not ok');
       const parsedData = await response.json();
