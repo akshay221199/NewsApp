@@ -1,23 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import Navbar from './components/Navbar';
+import Newses from './components/Newses';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Newses pageSize="5" country="in" category="sports" />} />
+          <Route path="/technology" element={<Newses pageSize="5" country="in" category="technology" />} />
+          <Route path="/business" element={<Newses pageSize="5" country="in" category="business" />} />
+          <Route path="/entertainment" element={<Newses pageSize="5" country="in" category="entertainment" />} />
+          <Route path="/health" element={<Newses pageSize="5" country="in" category="health" />} />
+          <Route path="/science" element={<Newses pageSize="5" country="in" category="science" />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
