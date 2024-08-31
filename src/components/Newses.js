@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import NewsItems from './NewsItems';
 
-const Newses = ({ country, pageSize, category }) => {
+const Newses = ({ country, category }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -13,8 +13,9 @@ const Newses = ({ country, pageSize, category }) => {
     setLoading(true);
     setError(null); // Clear previous errors
     try {
-      const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=100cf3514d2c4dcca19877c952cac93c&page=${page}&pageSize=${pageSize}`;
-      const response = await fetch(url);
+      // const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=002ef00f98974c7e8f49ffb6522fcc47&page=${page}&pageSize=${pageSize}`;
+     const url1 = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=002ef00f98974c7e8f49ffb6522fcc47&page=${page}`;
+      const response = await fetch(url1);
       if (!response.ok) throw new Error('Network response was not ok');
       const parsedData = await response.json();
       setArticles(parsedData.articles);
@@ -26,7 +27,7 @@ const Newses = ({ country, pageSize, category }) => {
     } finally {
       setLoading(false);
     }
-  }, [country, category, pageSize]); // Add dependencies here
+  }, [country, category]); // Add dependencies here
 
   useEffect(() => {
     fetchNews(page);
@@ -39,7 +40,7 @@ const Newses = ({ country, pageSize, category }) => {
   };
 
   const handleNextClick = () => {
-    if (page + 1 <= Math.ceil(totalResults / pageSize)) {
+    if (page + 1 <= Math.ceil(totalResults )) {
       setPage(page + 1);
     }
   };
@@ -69,7 +70,7 @@ const Newses = ({ country, pageSize, category }) => {
         <button disabled={page <= 1} onClick={handlePrevClick} className="btn btn-dark">
           &larr; Previous
         </button>
-        <button disabled={page + 1 > Math.ceil(totalResults / pageSize)} onClick={handleNextClick} className="btn btn-dark">
+        <button disabled={page + 1 > Math.ceil(totalResults )} onClick={handleNextClick} className="btn btn-dark">
           &rarr; Next
         </button>
       </div>
@@ -79,13 +80,11 @@ const Newses = ({ country, pageSize, category }) => {
 
 Newses.defaultProps = {
   country: 'in',
-  pageSize: 5,
   category: 'general',
 };
 
 Newses.propTypes = {
   country: PropTypes.string,
-  pageSize: PropTypes.number,
   category: PropTypes.string,
 };
 
